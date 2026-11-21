@@ -1,6 +1,6 @@
 {
-  "appId": "am.safearm.zguysh",
-  "appName": "Զգույշ (SafeArm)",
+  "appId": "com.example.zguysh",
+  "appName": "Zguysh",
   "webDir": "dist",
   "bundledWebRuntime": false,
   "server": {
