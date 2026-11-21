@@ -98,11 +98,19 @@ export default function App() {
   return (
     <div className={`min-h-screen bg-[#0d1117] text-[#e6edf3] flex flex-col font-sans ${isElderlyMode ? 'text-lg' : 'text-sm sm:text-base'}`}>
       
-      {/* Գլխավոր Մենյու */}
-      <header className="border-b border-[#30363d] bg-[#161b22] sticky top-0 z-30 px-4 sm:px-8 py-3 flex items-center justify-between">
+      {/* Գլխավոր Մենյու (iPhone Safe-Area Top Compliant) */}
+      <header 
+        className="border-b border-[#30363d] bg-[#161b22]/95 backdrop-blur-md sticky top-0 z-30 flex items-center justify-between"
+        style={{
+          paddingTop: 'max(0.75rem, env(safe-area-inset-top))',
+          paddingBottom: '0.75rem',
+          paddingLeft: 'max(1rem, env(safe-area-inset-left))',
+          paddingRight: 'max(1rem, env(safe-area-inset-right))',
+        }}
+      >
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-[#1f6feb] flex items-center justify-center text-white">
-            <Shield className="w-4 h-4" />
+          <div className="w-9 h-9 rounded-lg bg-[#1f6feb] flex items-center justify-center text-white shrink-0">
+            <Shield className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -122,17 +130,17 @@ export default function App() {
         </div>
 
         <div className="flex items-center gap-2">
-          {/* AI Կարգավորումներ */}
+          {/* AI Կարգավորումներ (Apple HIG 44pt touch target) */}
           <button
             onClick={() => setIsSettingsModalOpen(true)}
-            className={`px-2.5 py-1.5 rounded-md text-xs font-medium border flex items-center gap-1.5 transition-colors ${
+            className={`min-h-[44px] px-3 py-2 rounded-md text-xs sm:text-sm font-medium border flex items-center gap-1.5 transition-colors ${
               hasAi
                 ? 'bg-[#21262d] text-[#58a6ff] border-[#388bfd]/40 hover:bg-[#30363d]'
                 : 'bg-[#21262d] text-[#8b949e] border-[#30363d] hover:text-white'
             }`}
             title="NVIDIA Nemotron AI Կարգավորումներ"
           >
-            <Settings className="w-3.5 h-3.5" />
+            <Settings className="w-4 h-4" />
             <span className="hidden sm:inline">AI Բանալի</span>
           </button>
 
@@ -143,7 +151,7 @@ export default function App() {
 
           <button
             onClick={() => setIsBusinessModalOpen(true)}
-            className="px-3 py-1.5 rounded-md text-xs sm:text-sm font-medium text-[#c9d1d9] hover:text-white hover:bg-[#21262d] border border-[#30363d]"
+            className="min-h-[44px] px-3.5 py-2 rounded-md text-xs sm:text-sm font-medium text-[#c9d1d9] hover:text-white hover:bg-[#21262d] border border-[#30363d] flex items-center justify-center"
           >
             Հայեցակարգ
           </button>
@@ -151,11 +159,17 @@ export default function App() {
       </header>
 
       {/* Գլխավոր Բովանդակություն */}
-      <main className="flex-1 max-w-3xl w-full mx-auto px-4 py-8 sm:py-12 flex flex-col">
+      <main 
+        className="flex-1 max-w-3xl w-full mx-auto px-4 py-6 sm:py-10 flex flex-col"
+        style={{
+          paddingLeft: 'max(1rem, env(safe-area-inset-left))',
+          paddingRight: 'max(1rem, env(safe-area-inset-right))',
+        }}
+      >
         
         {/* Ներածություն */}
-        <div className="mb-8">
-          <h1 className={`${isElderlyMode ? 'text-2xl sm:text-3xl' : 'text-xl sm:text-2xl'} font-semibold text-white tracking-tight`}>
+        <div className="mb-6 sm:mb-8">
+          <h1 className={`${isElderlyMode ? 'text-2xl sm:text-3xl' : 'text-xl sm:text-2xl'} font-semibold text-white tracking-tight leading-snug`}>
             Ստուգեք կասկածելի հաղորդագրությունը
           </h1>
           <p className="mt-2 text-[#8b949e] leading-relaxed">
@@ -163,17 +177,17 @@ export default function App() {
           </p>
         </div>
 
-        {/* Փորձարկման Օրինակներ */}
+        {/* Փորձարկման Օրինակներ (Apple HIG 44pt touch target) */}
         <div className="mb-6">
-          <div className="text-xs font-medium text-[#8b949e] mb-2">
+          <div className="text-xs font-medium text-[#8b949e] mb-2.5">
             Օրինակներ՝
           </div>
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-2">
             {DEMO_PRESETS.map((preset) => (
               <button
                 key={preset.id}
                 onClick={() => handleSelectPreset(preset)}
-                className="px-3 py-1.5 rounded-md bg-[#21262d] hover:bg-[#30363d] text-xs text-[#c9d1d9] border border-[#30363d] transition-colors"
+                className="min-h-[44px] px-3.5 py-2 rounded-md bg-[#21262d] hover:bg-[#30363d] text-xs sm:text-sm text-[#c9d1d9] border border-[#30363d] transition-colors flex items-center justify-center text-center"
               >
                 {preset.title}
               </button>
@@ -184,11 +198,11 @@ export default function App() {
         {/* Մուտքագրման Բլոկ */}
         <div className="rounded-lg border border-[#30363d] bg-[#161b22] p-4 sm:p-5 shadow-sm">
           
-          {/* Ներդիրներ (Tabs) */}
-          <div className="flex items-center gap-1 border-b border-[#30363d] pb-3 mb-4">
+          {/* Ներդիրներ (Tabs - Apple HIG 44pt touch target) */}
+          <div className="flex items-center gap-2 border-b border-[#30363d] pb-3 mb-4">
             <button
               onClick={() => setActiveTab('text')}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs sm:text-sm font-medium transition-colors ${
+              className={`min-h-[44px] flex items-center gap-2 px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors ${
                 activeTab === 'text'
                   ? 'bg-[#21262d] text-white'
                   : 'text-[#8b949e] hover:text-[#c9d1d9]'
@@ -200,7 +214,7 @@ export default function App() {
 
             <button
               onClick={() => setActiveTab('screenshot')}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs sm:text-sm font-medium transition-colors ${
+              className={`min-h-[44px] flex items-center gap-2 px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors ${
                 activeTab === 'screenshot'
                   ? 'bg-[#21262d] text-white'
                   : 'text-[#8b949e] hover:text-[#c9d1d9]'
@@ -221,36 +235,36 @@ export default function App() {
                   placeholder="Տեղադրեք այստեղ ստացված SMS-ը, Viber կամ WhatsApp հաղորդագրությունը..."
                   rows={4}
                   className={`w-full p-3.5 rounded-md bg-[#0d1117] border border-[#30363d] text-white placeholder-[#484f58] focus:outline-none focus:border-[#58a6ff] transition-colors resize-none leading-relaxed ${
-                    isElderlyMode ? 'text-lg' : 'text-sm'
+                    isElderlyMode ? 'text-lg' : 'text-base'
                   }`}
                 />
 
                 {inputText && (
                   <button
                     onClick={handleClear}
-                    className="absolute top-2.5 right-2.5 p-1 rounded text-[#8b949e] hover:text-white hover:bg-[#21262d]"
+                    className="min-h-[44px] min-w-[44px] absolute top-2 right-2 flex items-center justify-center rounded text-[#8b949e] hover:text-white hover:bg-[#21262d]"
                     title="Մաքրել"
                   >
-                    <X className="w-4 h-4" />
+                    <X className="w-5 h-5" />
                   </button>
                 )}
               </div>
 
-              {/* Կառավարման Կոճակներ */}
-              <div className="mt-3.5 flex flex-col sm:flex-row items-center justify-between gap-3">
+              {/* Կառավարման Կոճակներ (Apple HIG 44pt touch target) */}
+              <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
                 <button
                   onClick={handlePaste}
-                  className="w-full sm:w-auto px-3.5 py-2 rounded-md bg-[#21262d] hover:bg-[#30363d] text-[#c9d1d9] border border-[#30363d] text-xs sm:text-sm font-medium flex items-center justify-center gap-2"
+                  className="min-h-[44px] w-full sm:w-auto px-4 py-2.5 rounded-md bg-[#21262d] hover:bg-[#30363d] text-[#c9d1d9] border border-[#30363d] text-xs sm:text-sm font-medium flex items-center justify-center gap-2"
                 >
-                  <Copy className="w-3.5 h-3.5 text-[#8b949e]" />
+                  <Copy className="w-4 h-4 text-[#8b949e]" />
                   <span>Տեղադրել ստեղնաշարից</span>
                 </button>
 
                 <button
                   onClick={() => handleAnalyze()}
                   disabled={!inputText.trim() || isAnalyzing}
-                  className={`w-full sm:w-auto px-6 py-2 rounded-md bg-[#1f6feb] hover:bg-[#388bfd] text-white font-medium text-xs sm:text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${
-                    isElderlyMode ? 'text-base py-3 px-8' : ''
+                  className={`min-h-[44px] w-full sm:w-auto px-7 py-2.5 rounded-md bg-[#1f6feb] hover:bg-[#388bfd] text-white font-medium text-xs sm:text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${
+                    isElderlyMode ? 'text-base min-h-[50px] px-8' : ''
                   }`}
                 >
                   {isAnalyzing ? (
@@ -269,7 +283,7 @@ export default function App() {
           {/* Նկարի Մուտք */}
           {activeTab === 'screenshot' && (
             <div>
-              <label className="border border-dashed border-[#30363d] hover:border-[#58a6ff] rounded-md p-8 flex flex-col items-center justify-center cursor-pointer bg-[#0d1117] transition-colors">
+              <label className="border border-dashed border-[#30363d] hover:border-[#58a6ff] rounded-md p-8 flex flex-col items-center justify-center cursor-pointer bg-[#0d1117] transition-colors min-h-[160px]">
                 <input
                   type="file"
                   accept="image/*"
@@ -313,7 +327,7 @@ export default function App() {
         />
 
         {/* Կանոններ */}
-        <div className="mt-10 border border-[#30363d] rounded-lg bg-[#161b22] p-5">
+        <div className="mt-8 sm:mt-10 border border-[#30363d] rounded-lg bg-[#161b22] p-4 sm:p-5">
           <div className="flex items-center gap-2 mb-3">
             <Info className="w-4 h-4 text-[#58a6ff]" />
             <h2 className="text-sm font-semibold text-white">
@@ -341,8 +355,15 @@ export default function App() {
 
       </main>
 
-      {/* Ստորոտ */}
-      <footer className="border-t border-[#30363d] py-6 px-4 text-center text-xs text-[#8b949e]">
+      {/* Ստորոտ (iPhone Safe-Area Bottom Compliant) */}
+      <footer 
+        className="border-t border-[#30363d] py-6 px-4 text-center text-xs text-[#8b949e] mt-auto"
+        style={{
+          paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))',
+          paddingLeft: 'max(1rem, env(safe-area-inset-left))',
+          paddingRight: 'max(1rem, env(safe-area-inset-right))',
+        }}
+      >
         <p className="font-medium text-[#c9d1d9]">«Զգույշ» (SafeArm) © 2026</p>
         <p className="mt-1">
           Հասարակագիտական և կրթական նախագիծ՝ ուղղված Հայաստանում տեղեկատվական անվտանգության բարձրացմանը։

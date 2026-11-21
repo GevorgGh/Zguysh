@@ -35,20 +35,20 @@ export default function TrafficLight({ result, onAskFamily, isElderlyMode }) {
   const IconComponent = statusConfig.icon;
 
   return (
-    <div className={`mt-6 rounded-lg border ${statusConfig.borderColor} bg-[#161b22] p-5 sm:p-6 shadow-sm`}>
+    <div className={`mt-6 rounded-lg border ${statusConfig.borderColor} bg-[#161b22] p-4 sm:p-6 shadow-sm`}>
       
       {/* Վերնագիր և Կարգավիճակ */}
       <div className="pb-5 border-b border-[#30363d]">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2">
-            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-semibold border ${statusConfig.badgeBg}`}>
+            <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs sm:text-sm font-semibold border ${statusConfig.badgeBg}`}>
               <IconComponent className="w-4 h-4" />
               <span>{badgeText}</span>
             </span>
 
             {isAiVerified && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-[#1f6feb]/15 text-[#58a6ff] border border-[#1f6feb]/30">
-                <Cpu className="w-3 h-3" />
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium bg-[#1f6feb]/15 text-[#58a6ff] border border-[#1f6feb]/30">
+                <Cpu className="w-3.5 h-3.5" />
                 <span>{aiModel || 'Nemotron AI'}</span>
               </span>
             )}
@@ -56,7 +56,7 @@ export default function TrafficLight({ result, onAskFamily, isElderlyMode }) {
 
           <div className="flex items-center gap-2 text-xs text-[#8b949e]">
             <span>Ռիսկի աստիճան՝</span>
-            <div className="w-28 h-2 bg-[#0d1117] rounded-full overflow-hidden border border-[#30363d]">
+            <div className="w-28 h-2.5 bg-[#0d1117] rounded-full overflow-hidden border border-[#30363d]">
               <div 
                 className={`h-full ${statusConfig.barColor}`} 
                 style={{ width: `${Math.max(riskScore, 5)}%` }}
@@ -66,7 +66,7 @@ export default function TrafficLight({ result, onAskFamily, isElderlyMode }) {
           </div>
         </div>
 
-        <p className={`mt-3 text-[#c9d1d9] leading-relaxed ${isElderlyMode ? 'text-lg font-medium' : 'text-sm'}`}>
+        <p className={`mt-3 text-[#c9d1d9] leading-relaxed ${isElderlyMode ? 'text-lg font-medium' : 'text-sm sm:text-base'}`}>
           {explanation}
         </p>
       </div>
@@ -106,7 +106,7 @@ export default function TrafficLight({ result, onAskFamily, isElderlyMode }) {
 
       </div>
 
-      {/* Ուղարկել Հարազատին */}
+      {/* Ուղարկել Հարազատին (Apple HIG 44pt touch target) */}
       <div className="mt-5 pt-4 border-t border-[#30363d] flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="text-center sm:text-left text-xs text-[#8b949e]">
           Եթե վստահ չեք, հարցրեք ընտանիքի անդամներին կամ զավակներին։
@@ -114,8 +114,8 @@ export default function TrafficLight({ result, onAskFamily, isElderlyMode }) {
 
         <button
           onClick={onAskFamily}
-          className={`w-full sm:w-auto px-4 py-2 rounded-md bg-[#21262d] hover:bg-[#30363d] text-[#c9d1d9] hover:text-white border border-[#30363d] text-xs sm:text-sm font-medium flex items-center justify-center gap-2 ${
-            isElderlyMode ? 'text-base py-3 px-6' : ''
+          className={`min-h-[44px] w-full sm:w-auto px-5 py-2.5 rounded-md bg-[#21262d] hover:bg-[#30363d] text-[#c9d1d9] hover:text-white border border-[#30363d] text-xs sm:text-sm font-medium flex items-center justify-center gap-2 ${
+            isElderlyMode ? 'text-base min-h-[50px] px-7' : ''
           }`}
         >
           <Share2 className="w-4 h-4 text-[#58a6ff]" />

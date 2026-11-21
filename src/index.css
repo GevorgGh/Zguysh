@@ -1,19 +1,76 @@
 @import "tailwindcss";
 
 @layer base {
+  :root {
+    --sat: env(safe-area-inset-top, 0px);
+    --sab: env(safe-area-inset-bottom, 0px);
+    --sal: env(safe-area-inset-left, 0px);
+    --sar: env(safe-area-inset-right, 0px);
+  }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Armenian", Helvetica, Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, "Noto Sans Armenian", Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background-color: #0d1117;
     color: #e6edf3;
     overflow-x: hidden;
   }
+
+  /* Apple HIG Standard: Inputs must be at least 16px to prevent iOS Safari auto-zooming viewport */
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+
+  /* Apple HIG: Prevent unwanted callouts and selections on UI controls */
+  button, a, [role="button"], header, nav {
+    -webkit-touch-callout: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* Allow text selection where users need to read or copy */
+  p, li, span, h1, h2, h3, h4, textarea, code, pre {
+    user-select: text;
+    -webkit-user-select: text;
+  }
+}
+
+/* Apple HIG 44pt Touch Target Utility */
+.ios-touch-target {
+  min-height: 44px;
 }
 
 /* Subtle, clean focus and transition styles */
 input, textarea, button {
   transition: all 0.15s ease-in-out;
+}
+
+/* iOS Sheet Materialization animation */
+@keyframes sheetSlideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0.9;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 639px) {
+  .ios-sheet-container {
+    animation: sheetSlideUp 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
 }
 
 /* Custom minimal scrollbar */

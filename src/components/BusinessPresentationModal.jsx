@@ -5,20 +5,28 @@ export default function BusinessPresentationModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm overflow-y-auto">
-      <div className="relative w-full max-w-3xl bg-[#161b22] border border-[#30363d] rounded-lg p-6 sm:p-7 shadow-xl my-6">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm overflow-y-auto">
+      <div 
+        className="ios-sheet-container relative w-full max-w-3xl bg-[#161b22] border-t sm:border border-[#30363d] rounded-t-2xl sm:rounded-lg p-5 sm:p-7 shadow-2xl my-0 sm:my-6 max-h-[90vh] overflow-y-auto"
+        style={{
+          paddingBottom: 'max(1.5rem, calc(1rem + env(safe-area-inset-bottom)))',
+        }}
+      >
         
+        {/* iPhone Sheet Grabber */}
+        <div className="w-10 h-1 rounded-full bg-white/20 mx-auto mb-3 sm:hidden" />
+
         {/* Փակել */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-1 rounded text-[#8b949e] hover:text-white hover:bg-[#21262d]"
+          className="min-h-[44px] min-w-[44px] absolute top-4 right-4 flex items-center justify-center rounded text-[#8b949e] hover:text-white hover:bg-[#21262d]"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Վերնագիր */}
-        <div className="pb-4 border-b border-[#30363d]">
-          <h2 className="text-lg font-semibold text-white">«Զգույշ» (SafeArm) Նախագծի Հայեցակարգը</h2>
+        <div className="pb-4 border-b border-[#30363d] pr-10">
+          <h2 className="text-base sm:text-lg font-semibold text-white">«Զգույշ» (SafeArm) Նախագծի Հայեցակարգը</h2>
           <p className="text-xs text-[#8b949e]">Հասարակագիտական, բիզնես և տեխնոլոգիական վերլուծություն</p>
         </div>
 
@@ -27,7 +35,7 @@ export default function BusinessPresentationModal({ isOpen, onClose }) {
 
           {/* 1. Թիրախ */}
           <div className="p-4 rounded bg-[#0d1117] border border-[#30363d]">
-            <div className="flex items-center gap-2 text-[#58a6ff] font-semibold text-xs mb-2">
+            <div className="flex items-center gap-2 text-[#58a6ff] font-semibold text-xs sm:text-sm mb-2">
               <Users className="w-4 h-4" />
               <span>Երկկողմանի շուկա (Two-Sided Market)</span>
             </div>
@@ -39,7 +47,7 @@ export default function BusinessPresentationModal({ isOpen, onClose }) {
 
           {/* 2. Մասշտաբավորում */}
           <div className="p-4 rounded bg-[#0d1117] border border-[#30363d]">
-            <div className="flex items-center gap-2 text-[#3fb950] font-semibold text-xs mb-2">
+            <div className="flex items-center gap-2 text-[#3fb950] font-semibold text-xs sm:text-sm mb-2">
               <TrendingUp className="w-4 h-4" />
               <span>SaaS Մոդել</span>
             </div>
@@ -51,7 +59,7 @@ export default function BusinessPresentationModal({ isOpen, onClose }) {
 
           {/* 3. Գնագոյացում */}
           <div className="p-4 rounded bg-[#0d1117] border border-[#30363d]">
-            <div className="flex items-center gap-2 text-[#d29922] font-semibold text-xs mb-2">
+            <div className="flex items-center gap-2 text-[#d29922] font-semibold text-xs sm:text-sm mb-2">
               <DollarSign className="w-4 h-4" />
               <span>Freemium Եկամուտների Մոդել</span>
             </div>
@@ -63,7 +71,7 @@ export default function BusinessPresentationModal({ isOpen, onClose }) {
 
           {/* 4. Հասարակագիտություն */}
           <div className="p-4 rounded bg-[#0d1117] border border-[#30363d]">
-            <div className="flex items-center gap-2 text-[#f85149] font-semibold text-xs mb-2">
+            <div className="flex items-center gap-2 text-[#f85149] font-semibold text-xs sm:text-sm mb-2">
               <BookOpen className="w-4 h-4" />
               <span>Հասարակագիտական Կապը</span>
             </div>
@@ -75,11 +83,11 @@ export default function BusinessPresentationModal({ isOpen, onClose }) {
 
         </div>
 
-        {/* Փակել կոճակ */}
+        {/* Փակել կոճակ (Apple HIG 44pt touch target) */}
         <div className="mt-5 pt-4 border-t border-[#30363d] flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-1.5 bg-[#21262d] hover:bg-[#30363d] text-[#c9d1d9] hover:text-white rounded text-xs font-medium border border-[#30363d]"
+            className="min-h-[44px] px-5 py-2 bg-[#21262d] hover:bg-[#30363d] text-[#c9d1d9] hover:text-white rounded text-xs sm:text-sm font-medium border border-[#30363d]"
           >
             Փակել
           </button>
