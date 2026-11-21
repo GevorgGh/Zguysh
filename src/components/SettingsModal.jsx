@@ -81,26 +81,28 @@ export default function SettingsModal({ isOpen, onClose, onApiKeySaved }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md animate-fade-in">
       <div 
-        className="ios-sheet-container relative w-full max-w-lg bg-[#161b22] border-t sm:border border-[#30363d] rounded-t-2xl sm:rounded-xl p-5 sm:p-6 shadow-2xl overflow-y-auto max-h-[90vh]"
+        className="ios-sheet-container relative w-full max-w-lg glass-panel border-t sm:border border-white/10 rounded-t-3xl sm:rounded-2xl p-5 sm:p-7 shadow-elevated-lg overflow-y-auto max-h-[90vh]"
         style={{
           paddingBottom: 'max(1.5rem, calc(1rem + env(safe-area-inset-bottom)))',
         }}
       >
         
         {/* iPhone Sheet Grabber */}
-        <div className="w-10 h-1 rounded-full bg-white/20 mx-auto mb-3 sm:hidden" />
+        <div className="w-10 h-1.5 rounded-full bg-white/20 mx-auto mb-4 sm:hidden" />
 
         {/* Header */}
-        <div className="flex items-center justify-between pb-3.5 border-b border-[#30363d]">
-          <div className="flex items-center gap-2">
-            <Cpu className="w-5 h-5 text-[#58a6ff]" />
-            <h3 className="text-base font-semibold text-white">Կարգավորումներ</h3>
+        <div className="flex items-center justify-between pb-3.5 border-b border-white/[0.08]">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-[#1f6feb]/15 flex items-center justify-center text-[#58a6ff]">
+              <Cpu className="w-4 h-4" />
+            </div>
+            <h3 className="text-base font-semibold text-white tracking-tight">Կարգավորումներ</h3>
           </div>
           <button
             onClick={onClose}
-            className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-[#8b949e] hover:text-white hover:bg-[#21262d] transition-colors"
+            className="apple-press min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl text-[#8b949e] hover:text-white hover:bg-[#21262d] transition-colors"
             title="Փակել"
           >
             <X className="w-5 h-5" />
