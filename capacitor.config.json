@@ -1,0 +1,9 @@
+{
+  "appId": "am.safearm.zguysh",
+  "appName": "Զգույշ (SafeArm)",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  }
+}

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Զգույշ (SafeArm)</string>
+    <string name="title_activity_main">Զգույշ (SafeArm)</string>
+    <string name="package_name">am.safearm.zguysh</string>
+    <string name="custom_url_scheme">am.safearm.zguysh</string>
+</resources>

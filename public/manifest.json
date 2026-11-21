@@ -1,0 +1,21 @@
+{
+  "short_name": "Զգույշ",
+  "name": "Զգույշ - Կիբեռանվտանգության Լուսացույց",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#0B1120",
+  "theme_color": "#1E293B",
+  "display": "standalone",
+  "orientation": "portrait"
+}
