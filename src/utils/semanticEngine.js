@@ -27,6 +27,20 @@ export const INTENT_VECTORS = {
     advice: 'Ոչ մի օպերատոր չի պահանջում AnyDesk ներբեռնել կամ էկրանով կիսվել 5G կարգավորելու համար։ Անմիջապես անջատեք զանգը։'
   },
 
+  ADVANCE_FEE_JOB_SCAM: {
+    name: 'Կեղծ աշխատանքի առաջարկ և կանխավճարի կորզում (Job Offer / Advance-Fee Scam)',
+    weight: 95,
+    patterns: [
+      /ինքնակենսագրական/i, /inqnakensagrakan/i, /\bcv\b/i, /հեռավար\s*աշխատանք/i, /heravar\s*ashxatanq/i,
+      /օրական\s*\d+\s*ժամ/i, /orakan\s*\d+\s*zham/i, /գրանցման\s*վճար/i, /grancman\s*vchar/i,
+      /ծրագիրն\s*ակտիվացնել/i, /tsragirn\s*aktivacnel/i, /ծրագրի\s*ակտիվաց/i, /կվերադարձվի\s*առաջին/i,
+      /kveradardzvi/i, /փոխանցել\s*[\d,\.]+\s*դրամ/i, /poxancel/i, /հաշվեհամարին/i, /hashvehamarin/i,
+      /աշխատանքային\s*պայմանագիր/i, /ashxatanqayin\s*paymanagir/i, /աշխատավարձը\s*[\d,\.]+/i,
+      /вакансия/i, /удаленная\s*работа/i, /взнос\s*за\s*регистрацию/i, /job\s*offer/i, /registration\s*fee/i
+    ],
+    advice: 'Ոչ մի օրինական գործատու աշխատանքի ընդունելու, պայմանագիր կնքելու կամ «ծրագիր ակտիվացնելու» համար գումար չի պահանջում։ Ոչ մի դրամ մի՛ փոխանցեք։'
+  },
+
   FINANCIAL_BAIT: {
     name: 'Կեղծ եկամտի / Ներդրումային թակարդ (Financial Bait)',
     weight: 85,
@@ -99,6 +113,6 @@ export function analyzeSemanticIntent(text) {
     detectedIntents,
     totalRisk: Math.min(totalRisk, 100),
     reasons,
-    advice: Array.from(new Set(advice))
+    advice
   };
 }
