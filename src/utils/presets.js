@@ -11,6 +11,13 @@ export const DEMO_PRESETS = [
     text: 'Շնորհավորում ենք, Ձեր ինքնակենսագրականը հաստատվել է միջազգային ընկերությունում հեռավար աշխատանքի համար (օրական 2 ժամ, աշխատավարձը՝ 400,000 դրամ)։ Աշխատանքային պայմանագիրը կնքելու և համակարգչային ծրագիրն ակտիվացնելու համար անհրաժեշտ է փոխանցել 15,000 դրամ գրանցման վճար հետևյալ հաշվեհամարին՝ 0000-0000-0000-0000։ Գումարը կվերադարձվի առաջին աշխատավարձի հետ։'
   },
   {
+    id: 'yerevan_fine_scam',
+    title: 'Երևանի քաղաքապետարանի տուգանք',
+    subtitle: 'Կեղծ պարտավորության ծանուցում',
+    expectedStatus: 'red',
+    text: "Harge'li qaghaqaci, Erevani hamaynqi nkatmamb unecac partavorutyunnery karogh eq ditel: https://yerevan-pay.cc/sc/38910"
+  },
+  {
     id: 'vote_scam',
     title: 'Կեղծ քվեարկության մրցույթ',
     subtitle: 'Telegram/WhatsApp գողություն',

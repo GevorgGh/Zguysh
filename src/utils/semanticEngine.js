@@ -76,6 +76,17 @@ export const INTENT_VECTORS = {
     advice: 'Եթե իրոք ծանրոցի եք սպասում, այցելեք միայն պաշտոնական haypost.am կամ մոտեցեք փոստային բաժանմունք։'
   },
 
+  MUNICIPALITY_FINE_SCAM: {
+    name: 'Երևանի քաղաքապետարանի / տուգանքների կեղծ ծանուցում (Municipality Fine Scam)',
+    weight: 95,
+    patterns: [
+      /(?:erevani|yerevani|երևանի)\s+(?:hamaynqi?|qaghaqapetaran|քաղաքապետարան)/i,
+      /(?:partavorutyun|պարտավորություն|tuganq|տուգանք).*(?:vcharel|vcharman|վճարել|վճարման)/i,
+      /(?:harge'?li\s+qaghaqaci|հարգելի\s+քաղաքացի).*(?:partavorutyun|tuganq|տուգանք|վճար)/i
+    ],
+    advice: 'Երևանի քաղաքապետարանը SMS-ներում չհավաստագրված հղումներով վճարումներ չի պահանջում։ Տուգանքները կամ պարտավորությունները ստուգեք միայն yerevan.am կամ roadpolice.am պաշտոնական կայքերում։'
+  },
+
   DECEPTIVE_URGENCY: {
     name: 'Հոգեբանական ճնշում և շտապողականություն (Social Engineering Urgency)',
     weight: 35,

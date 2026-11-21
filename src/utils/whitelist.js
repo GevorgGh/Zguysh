@@ -20,6 +20,7 @@ export const OFFICIAL_ARMENIAN_BRANDS = [
   { name: 'Արմէկոնոմբանկ (Armeconombank)', keywords: ['aeb', 'armeconombank'], domains: ['aeb.am', 'armeconombank.am'] },
   { name: 'ԱրՔա (ArCa)', keywords: ['arca', 'ar-ca'], domains: ['arca.am'] },
   { name: 'ՀՀ Կառավարություն և Ոստիկանություն', keywords: ['police', 'gov', 'e-gov', 'taxservice'], domains: ['gov.am', 'e-gov.am', 'police.am', 'taxservice.am', 'e-payments.am'] },
+  { name: 'Երևանի Քաղաքապետարան (Yerevan Municipality)', keywords: ['yerevan', 'erevan'], domains: ['yerevan.am'] },
   { name: 'Վիվա (Viva / MTS)', keywords: ['viva', 'mts'], domains: ['viva.am', 'vivacell.am'] },
   { name: 'Յուքոմ (Ucom)', keywords: ['ucom'], domains: ['ucom.am'] },
   { name: 'Թիմ Տելեկոմ (Team Telecom Armenia)', keywords: ['telecom', 'teamtelecom'], domains: ['telecom.am'] },

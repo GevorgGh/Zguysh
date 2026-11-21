@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Shield, Copy, Image as ImageIcon, FileText, RefreshCw, 
   Info, X, Cpu, Presentation, Settings
@@ -6,6 +6,7 @@ import {
 
 import { analyzeMessageAsync } from './utils/analyzer';
 import { isAiConfigured } from './utils/aiClient';
+import { extractTextFromImage } from './utils/ocrScanner';
 import { DEMO_PRESETS } from './utils/presets';
 import TrafficLight from './components/TrafficLight';
 import AskFamilyModal from './components/AskFamilyModal';
@@ -16,7 +17,10 @@ import ElderlyModeToggle from './components/ElderlyModeToggle';
 export default function App() {
   const [activeTab, setActiveTab] = useState('text'); // 'text' | 'screenshot'
   const [inputText, setInputText] = useState('');
+  const [extractedText, setExtractedText] = useState('');
   const [imagePreview, setImagePreview] = useState(null);
+  const [isOcrLoading, setIsOcrLoading] = useState(false);
+  const [ocrProgressText, setOcrProgressText] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState(null);
   const [isElderlyMode, setIsElderlyMode] = useState(false);
@@ -26,6 +30,9 @@ export default function App() {
   const [isAskModalOpen, setIsAskModalOpen] = useState(false);
   const [isBusinessModalOpen, setIsBusinessModalOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  // Auto-scroll ref
+  const resultRef = useRef(null);
 
   useEffect(() => {
     setHasAi(isAiConfigured());
@@ -48,6 +55,9 @@ export default function App() {
     try {
       const res = await analyzeMessageAsync(textToAnalyze);
       setAnalysisResult(res);
+      setTimeout(() => {
+        resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 150);
     } catch (err) {
       console.error('Analysis error:', err);
     } finally {
@@ -62,6 +72,7 @@ export default function App() {
         const text = await navigator.clipboard.readText();
         if (text) {
           setInputText(text);
+          setExtractedText(text);
           handleAnalyze(text);
         }
       }
@@ -74,34 +85,52 @@ export default function App() {
   const handleSelectPreset = (preset) => {
     setActiveTab('text');
     setInputText(preset.text);
+    setExtractedText(preset.text);
     handleAnalyze(preset.text);
   };
 
-  // Սքրինշոթի վերբեռնում
-  const handleImageChange = (e) => {
+  // Սքրինշոթի վերբեռնում և OCR ընթերցում
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
 
-      setIsAnalyzing(true);
-      setTimeout(async () => {
-        const simulatedDetectedText = 'HAYPOST: Dzer tsanrotse kasecvel e: Hascei sxal: Xndrum enq mutqagrel haypost-delivery.cc ev vcharel 650 dram:';
-        setInputText(simulatedDetectedText);
-        const res = await analyzeMessageAsync(simulatedDetectedText);
-        setAnalysisResult(res);
-        setIsAnalyzing(false);
-      }, 500);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result);
+    };
+    reader.readAsDataURL(file);
+
+    setIsOcrLoading(true);
+    setOcrProgressText('Սկանավորվում է նկարը...');
+
+    try {
+      const ocrResult = await extractTextFromImage(file, (msg) => {
+        setOcrProgressText(msg);
+      });
+
+      if (ocrResult.success && ocrResult.text && ocrResult.text.trim()) {
+        const detected = ocrResult.text.trim();
+        setExtractedText(detected);
+        setInputText(detected);
+        setOcrProgressText('Տեքստը հաջողությամբ կարդացվել է։');
+        await handleAnalyze(detected);
+      } else {
+        setOcrProgressText('Նկարից տեքստի ավտոմատ ընթերցումը չհաջողվեց (նկարը պարզ չէ կամ կապ չկա)։ Կարող եք տեքստը կամ հղումը գրել ստորև դաշտում։');
+      }
+    } catch (err) {
+      console.warn('OCR error:', err);
+      setOcrProgressText('Նկարից տեքստի ավտոմատ ընթերցումը չհաջողվեց։ Կարող եք տեքստը կամ հղումը գրել ստորև դաշտում։');
+    } finally {
+      setIsOcrLoading(false);
     }
   };
 
   const handleClear = () => {
     setInputText('');
+    setExtractedText('');
     setImagePreview(null);
     setAnalysisResult(null);
+    setOcrProgressText('');
   };
 
   return (
@@ -303,8 +332,8 @@ export default function App() {
 
           {/* Նկարի Մուտք */}
           {activeTab === 'screenshot' && (
-            <div>
-              <label className="border border-dashed border-white/15 hover:border-[#58a6ff] rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer bg-[#0b0f17]/60 hover:bg-[#0b0f17]/90 transition-all min-h-[170px]">
+            <div className="space-y-4">
+              <label className="border border-dashed border-white/15 hover:border-[#58a6ff] rounded-xl p-6 sm:p-8 flex flex-col items-center justify-center cursor-pointer bg-[#0b0f17]/60 hover:bg-[#0b0f17]/90 transition-all min-h-[170px] relative">
                 <input
                   type="file"
                   accept="image/*"
@@ -313,11 +342,11 @@ export default function App() {
                 />
 
                 {imagePreview ? (
-                  <div className="flex flex-col items-center gap-3">
+                  <div className="flex flex-col items-center gap-3 w-full">
                     <img 
                       src={imagePreview} 
                       alt="Ներբեռնված սքրինշոթ" 
-                      className="max-h-56 rounded-lg border border-white/10 object-contain shadow-elevated-sm"
+                      className="max-h-64 rounded-lg border border-white/10 object-contain shadow-elevated-sm"
                     />
                     <span className="text-xs text-[#58a6ff] font-medium">
                       Սեղմեք՝ նոր նկար ընտրելու համար
@@ -337,17 +366,85 @@ export default function App() {
                   </>
                 )}
               </label>
+
+              {/* OCR Կարգավիճակ / Ընթացք */}
+              {isOcrLoading && (
+                <div className="p-3.5 bg-[#1f6feb]/10 border border-[#1f6feb]/30 rounded-xl flex items-center gap-2.5 text-xs text-[#58a6ff] animate-pulse">
+                  <RefreshCw className="w-4 h-4 animate-spin shrink-0" />
+                  <span>{ocrProgressText || 'Կարդացվում է նկարի տեքստը...'}</span>
+                </div>
+              )}
+
+              {/* Եթե նկարը բեռնված է՝ ցուցադրել հայտնաբերված տեքստի դաշտը */}
+              {imagePreview && (
+                <div className="space-y-3 pt-2">
+                  {ocrProgressText && !isOcrLoading && (
+                    <div className="text-xs text-[#8b949e] bg-[#0b0f17] p-2.5 rounded-lg border border-white/5">
+                      {ocrProgressText}
+                    </div>
+                  )}
+
+                  <div>
+                    <label className="text-xs font-medium text-[#c9d1d9] block mb-1.5 flex items-center justify-between">
+                      <span>Նկարից կարդացված տեքստը կամ հղումը՝</span>
+                      <span className="text-[11px] text-[#8b949e]">Կարող եք խմբագրել</span>
+                    </label>
+                    <textarea
+                      value={extractedText || inputText}
+                      onChange={(e) => {
+                        setExtractedText(e.target.value);
+                        setInputText(e.target.value);
+                      }}
+                      placeholder="Տեղադրեք կամ գրեք նկարում եղած հղումը կամ տեքստը..."
+                      rows={3}
+                      className={`w-full p-3.5 rounded-xl bg-[#0b0f17]/90 border border-white/10 text-white placeholder-[#484f58] focus:outline-none focus:border-[#58a6ff] focus:ring-2 focus:ring-[#1f6feb]/25 transition-all resize-none leading-relaxed shadow-inner ${
+                        isElderlyMode ? 'text-lg' : 'text-base'
+                      }`}
+                    />
+                  </div>
+
+                  {/* Կառավարման Կոճակներ */}
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+                    <button
+                      onClick={handleClear}
+                      className="apple-press min-h-[44px] w-full sm:w-auto px-4 py-2.5 rounded-xl bg-[#21262d]/80 hover:bg-[#30363d] text-[#f85149] border border-white/10 text-xs sm:text-sm font-medium flex items-center justify-center gap-2"
+                    >
+                      <X className="w-4 h-4" />
+                      <span>Մաքրել</span>
+                    </button>
+
+                    <button
+                      onClick={() => handleAnalyze(extractedText || inputText)}
+                      disabled={!(extractedText || inputText).trim() || isAnalyzing || isOcrLoading}
+                      className={`apple-press min-h-[44px] w-full sm:w-auto px-7 py-2.5 rounded-xl bg-gradient-to-r from-[#1f6feb] to-[#2f81f7] hover:from-[#388bfd] hover:to-[#58a6ff] text-white font-medium text-xs sm:text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_4px_16px_rgba(31,111,235,0.35),inset_0_1px_0_rgba(255,255,255,0.2)] ${
+                        isElderlyMode ? 'text-base min-h-[50px] px-8' : ''
+                      }`}
+                    >
+                      {isAnalyzing ? (
+                        <>
+                          <RefreshCw className="w-4 h-4 animate-spin" />
+                          <span>{hasAi ? 'Վերլուծվում է AI-ով...' : 'Վերլուծվում է...'}</span>
+                        </>
+                      ) : (
+                        <span>Ստուգել նկարի հաղորդագրությունը</span>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
         </div>
 
         {/* Եզրակացության Բլոկ */}
-        <TrafficLight 
-          result={analysisResult} 
-          onAskFamily={() => setIsAskModalOpen(true)}
-          isElderlyMode={isElderlyMode}
-        />
+        <div ref={resultRef}>
+          <TrafficLight 
+            result={analysisResult} 
+            onAskFamily={() => setIsAskModalOpen(true)}
+            isElderlyMode={isElderlyMode}
+          />
+        </div>
 
         {/* Կանոններ */}
         <div className="mt-8 sm:mt-10 glass-panel rounded-2xl p-5 sm:p-6 shadow-elevated-md">
