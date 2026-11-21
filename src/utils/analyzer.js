@@ -95,9 +95,19 @@ export function analyzeMessage(text) {
     }
   }
 
+
+  // Իmasdtayin risk-i hashvarkum: verified URL-neri depqum semantic risk-y sahmanapakum enq
   if (semanticResult.detectedIntents.length > 0) {
-    riskScore = Math.max(riskScore, semanticResult.totalRisk);
-    reasons.push(...semanticResult.reasons);
+    if (allUrlsVerified && urls.length > 0) {
+      // Boloor URL-nery havastagrvats en (or. yerevan.am, gov.am)
+      // "Vcharel", "partavorutyun" barery normal en petakan/bankayin SMS-nerum
+      // Risk-y sahmanapakum enq 10-ov, vorpeszi GREEN mna
+      riskScore = Math.max(riskScore, Math.min(semanticResult.totalRisk, 10));
+    } else {
+      // Chhavastagrvats URL-ner - lriv semantic risk
+      riskScore = Math.max(riskScore, semanticResult.totalRisk);
+      reasons.push(...semanticResult.reasons);
+    }
   }
 
   if (!allUrlsVerified && semanticResult.detectedIntents.length > 0) {

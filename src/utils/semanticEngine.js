@@ -70,8 +70,8 @@ export const INTENT_VECTORS = {
     weight: 75,
     patterns: [
       /ծանրոց/i, /tsanroc/i, /առաքում/i, /araqum/i, /չի\s*հաջողվել/i, /chi\s*hajoghvel/i,
-      /կասեցվել/i, /kasecvel/i, /հասցեի\s*սխալ/i, /hascei\s*sxal/i, /թարմացրեք/i, /tarmacreq/i,
-      /առաքման\s*վճար/i, /vcharel/i, /վճարել/i, /պահեստ/i, /pahest/i, /посылка/i, /доставка/i
+      /հասցեի\s*սխալ/i, /hascei\s*sxal/i, /թարմացրեք/i, /tarmacreq/i,
+      /առաքման\s*վճար/i, /պահեստ/i, /pahest/i, /посылка/i, /доставка/i
     ],
     advice: 'Եթե իրոք ծանրոցի եք սպասում, այցելեք միայն պաշտոնական haypost.am կամ մոտեցեք փոստային բաժանմունք։'
   },
@@ -91,7 +91,7 @@ export const INTENT_VECTORS = {
     name: 'Հոգեբանական ճնշում և շտապողականություն (Social Engineering Urgency)',
     weight: 35,
     patterns: [
-      /արգելափակվել\s*է/i, /kargelapakvi/i, /argelapakvel/i, /կասեցվել\s*է/i, /kasecvel/i,
+      /արգելափակվել\s*է/i, /kargelapakvi/i, /argelapakvel/i, /կասեցվել\s*է/i, /kasecvel\\s*\u0567/i,
       /դատական/i, /datakan/i, /ոստիկան/i, /vostikan/i, /տուգանք/i, /tugank/i, /անմիջապես/i,
       /anmijapes/i, /24\s*ժամ/i, /24\s*zham/i, /12\s*ժամ/i, /շտապ/i, /срочно/i, /заблокирован/i
     ],
