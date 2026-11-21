@@ -45,6 +45,28 @@
   }
 }
 
+/* iOS Dynamic Island & Status Bar Protection Spacer */
+.ios-status-bar-spacer {
+  height: 0px;
+}
+
+/* If running on an iOS device (iPhone/iPad) or in standalone PWA / Capacitor */
+html.is-ios .ios-status-bar-spacer {
+  height: max(env(safe-area-inset-top, 0px), 50px);
+}
+
+@supports (-webkit-touch-callout: none) {
+  .ios-status-bar-spacer {
+    height: max(env(safe-area-inset-top, 0px), 50px);
+  }
+}
+
+@media all and (display-mode: standalone) {
+  .ios-status-bar-spacer {
+    height: max(env(safe-area-inset-top, 0px), 50px);
+  }
+}
+
 /* Apple HIG 44pt Touch Target Utility */
 .ios-touch-target {
   min-height: 44px;
