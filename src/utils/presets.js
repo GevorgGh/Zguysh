@@ -1,8 +1,29 @@
 /**
- * Իրական հայաստանյան խարդախությունների օրինակներ փորձարկման համար։
+ * Իրական հայաստանյան խարդախությունների և պաշտոնական ծանուցումների օրինակներ։
  */
 
 export const DEMO_PRESETS = [
+  {
+    id: 'job_scam',
+    title: 'Կեղծ աշխատանքի առաջարկ',
+    subtitle: 'Գրանցման վճարի կորզում',
+    expectedStatus: 'red',
+    text: 'Շնորհավորում ենք, Ձեր ինքնակենսագրականը հաստատվել է միջազգային ընկերությունում հեռավար աշխատանքի համար (օրական 2 ժամ, աշխատավարձը՝ 400,000 դրամ)։ Աշխատանքային պայմանագիրը կնքելու և համակարգչային ծրագիրն ակտիվացնելու համար անհրաժեշտ է փոխանցել 15,000 դրամ գրանցման վճար հետևյալ հաշվեհամարին՝ 0000-0000-0000-0000։ Գումարը կվերադարձվի առաջին աշխատավարձի հետ։'
+  },
+  {
+    id: 'vote_scam',
+    title: 'Կեղծ քվեարկության մրցույթ',
+    subtitle: 'Telegram/WhatsApp գողություն',
+    expectedStatus: 'red',
+    text: 'Բարև, խնդրում եմ քվեարկիր զարմուհուս օգտին այս մրցույթում, շատ քիչ է մնացել հաղթանակին՝ vote-contest.org'
+  },
+  {
+    id: 'bank_block_scam',
+    title: 'Բանկային քարտի արգելափակում',
+    subtitle: 'Կեղծ IDBank ֆիշինգ',
+    expectedStatus: 'red',
+    text: 'Հարգելի հաճախորդ, Ձեր բանկային քարտը ժամանակավորապես արգելափակվել է անվտանգության նկատառումներից ելնելով։ Ապաարգելափակման համար անցեք հետևյալ հղումով՝ idbank-am-verify.com'
+  },
   {
     id: 'haypost_scam',
     title: 'Հայփոստի կեղծ SMS',
@@ -37,5 +58,12 @@ export const DEMO_PRESETS = [
     subtitle: 'Իրական անվտանգ ծանուցում',
     expectedStatus: 'green',
     text: 'HAYPOST: Dzer tsanrotse (AM930214892) hasel e 0010 postayin bazhanmunq: Karogh eq motenal andzy hastatogh pastatghtov: Teghekutyunneri hamar՝ https://www.haypost.am kam zangahareq (010) 514-514:'
+  },
+  {
+    id: 'genuine_bank',
+    title: 'Պաշտոնական Բանկային SMS',
+    subtitle: 'Գործարքի պաշտոնական տեղեկացում',
+    expectedStatus: 'green',
+    text: 'Ameriabank: Dzer qartic katarel eq vcharum 4,200 AMD: Mnacord՝ 85,340 AMD: Harceri depqum zangahareq +374 10 561111 kam ayceleq https://ameriabank.am:'
   }
 ];
