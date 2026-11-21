@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Shield, Copy, Image as ImageIcon, FileText, RefreshCw, 
-  Info, X, Settings, Cpu, Presentation
+  Info, X, Cpu, Presentation, Settings
 } from 'lucide-react';
 
 import { analyzeMessageAsync } from './utils/analyzer';
@@ -25,7 +25,7 @@ export default function App() {
   // Modals
   const [isAskModalOpen, setIsAskModalOpen] = useState(false);
   const [isBusinessModalOpen, setIsBusinessModalOpen] = useState(false);
-  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   useEffect(() => {
     setHasAi(isAiConfigured());
@@ -133,7 +133,7 @@ export default function App() {
                 {hasAi && (
                   <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded bg-[#238636]/15 text-[#3fb950] border border-[#238636]/30">
                     <Cpu className="w-3 h-3" />
-                    <span className="hidden md:inline">Nemotron</span>
+                    <span>AI</span>
                   </span>
                 )}
               </div>
@@ -143,22 +143,8 @@ export default function App() {
             </div>
           </div>
 
-          {/* Action Buttons (Compact on iPhone, text on desktop) */}
+          {/* Action Buttons: Clean & Standard */}
           <div className="flex items-center gap-1.5 sm:gap-2">
-            {/* AI Կարգավորումներ */}
-            <button
-              onClick={() => setIsSettingsModalOpen(true)}
-              className={`min-h-[44px] px-2.5 sm:px-3 py-2 rounded-md text-xs sm:text-sm font-medium border flex items-center justify-center gap-1.5 transition-colors ${
-                hasAi
-                  ? 'bg-[#21262d] text-[#58a6ff] border-[#388bfd]/40 hover:bg-[#30363d]'
-                  : 'bg-[#21262d] text-[#8b949e] border-[#30363d] hover:text-white'
-              }`}
-              title="NVIDIA Nemotron AI Կարգավորումներ"
-            >
-              <Settings className="w-4 h-4" />
-              <span className="hidden sm:inline">AI Բանալի</span>
-            </button>
-
             {/* Խոշոր տառեր */}
             <ElderlyModeToggle 
               isElderlyMode={isElderlyMode} 
@@ -168,11 +154,21 @@ export default function App() {
             {/* Հայեցակարգ */}
             <button
               onClick={() => setIsBusinessModalOpen(true)}
-              className="min-h-[44px] px-2.5 sm:px-3.5 py-2 rounded-md text-xs sm:text-sm font-medium text-[#c9d1d9] hover:text-white hover:bg-[#21262d] border border-[#30363d] flex items-center justify-center gap-1.5"
+              className="min-h-[44px] px-2.5 sm:px-3.5 py-2 rounded-md text-xs sm:text-sm font-medium text-[#c9d1d9] hover:text-white hover:bg-[#21262d] border border-[#30363d] flex items-center justify-center gap-1.5 transition-colors"
               title="Նախագծի հայեցակարգ"
             >
               <Presentation className="w-4 h-4 text-[#8b949e]" />
               <span className="hidden sm:inline">Հայեցակարգ</span>
+            </button>
+
+            {/* Կարգավորումներ (Settings: AI Token, Model, etc.) */}
+            <button
+              onClick={() => setIsSettingsOpen(true)}
+              className="min-h-[44px] px-2.5 sm:px-3.5 py-2 rounded-md text-xs sm:text-sm font-medium text-[#c9d1d9] hover:text-white hover:bg-[#21262d] border border-[#30363d] flex items-center justify-center gap-1.5 transition-colors"
+              title="Կարգավորումներ"
+            >
+              <Settings className="w-4 h-4 text-[#8b949e]" />
+              <span className="hidden sm:inline">Կարգավորումներ</span>
             </button>
           </div>
         </div>
@@ -194,7 +190,7 @@ export default function App() {
             Ստուգեք կասկածելի հաղորդագրությունը
           </h1>
           <p className="mt-2 text-[#8b949e] leading-relaxed">
-            Տեղադրեք ստացված SMS-ը, հղումը կամ նկարը։ Համակարգը{hasAi ? ' (NVIDIA Nemotron AI-ի աջակցությամբ)' : ''} կստուգի հասցեի իսկությունը և կտա հստակ եզրակացություն։
+            Տեղադրեք ստացված SMS-ը, հղումը կամ նկարը։ Համակարգը կստուգի հասցեի իսկությունը և կտա հստակ եզրակացություն։
           </p>
         </div>
 
@@ -291,7 +287,7 @@ export default function App() {
                   {isAnalyzing ? (
                     <>
                       <RefreshCw className="w-4 h-4 animate-spin" />
-                      <span>{hasAi ? 'Վերլուծվում է Nemotron AI-ով...' : 'Ստուգվում է...'}</span>
+                      <span>{hasAi ? 'Վերլուծվում է AI-ով...' : 'Վերլուծվում է...'}</span>
                     </>
                   ) : (
                     <span>Ստուգել հաղորդագրությունը</span>
@@ -404,9 +400,9 @@ export default function App() {
       />
 
       <SettingsModal 
-        isOpen={isSettingsModalOpen}
-        onClose={() => setIsSettingsModalOpen(false)}
-        onApiKeySaved={() => setHasAi(isAiConfigured())}
+        isOpen={isSettingsOpen} 
+        onClose={() => setIsSettingsOpen(false)} 
+        onApiKeySaved={() => setHasAi(isAiConfigured())} 
       />
 
     </div>

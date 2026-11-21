@@ -1,7 +1,9 @@
 /**
  * NVIDIA NIM (build.nvidia.com) AI Client
- * Powered by NVIDIA Nemotron-3 Ultra & Meta Llama-3.3
+ * Powered by NVIDIA Nemotron-3 Ultra (550B)
  */
+
+import { AI_CONFIG } from '../config/aiConfig.js';
 
 export const SUPPORTED_MODELS = [
   { id: 'nvidia/nemotron-3-ultra-550b-a55b', name: 'NVIDIA Nemotron-3 Ultra (550B)' },
@@ -9,18 +11,39 @@ export const SUPPORTED_MODELS = [
   { id: 'meta/llama-3.3-70b-instruct', name: 'Meta Llama 3.3 (70B Instruct)' },
 ];
 
-export const DEFAULT_MODEL = 'nvidia/nemotron-3-ultra-550b-a55b';
-const DIRECT_URL = 'https://integrate.api.nvidia.com/v1/chat/completions';
-const PROXY_URL = '/api/nvidia/v1/chat/completions';
+export const DEFAULT_MODEL = AI_CONFIG.model;
+const DIRECT_URL = AI_CONFIG.directUrl;
+const PROXY_URL = AI_CONFIG.proxyUrl;
+
+export function isAiEnabled() {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const val = localStorage.getItem('safearm_ai_enabled');
+      if (val !== null) return val === 'true';
+    }
+  } catch {}
+  return true; // default enabled
+}
+
+export function setAiEnabled(enabled) {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('safearm_ai_enabled', enabled ? 'true' : 'false');
+    }
+  } catch {}
+}
 
 export function getNvidiaApiKey() {
   let key = '';
+
+  // 1. Check browser localStorage override (user configured in Settings)
   try {
     if (typeof localStorage !== 'undefined') {
       key = localStorage.getItem('safearm_nvidia_api_key') || '';
     }
   } catch {}
 
+  // 2. Check import.meta.env (from .env or GitHub Action secret)
   if (!key) {
     try {
       if (typeof import.meta !== 'undefined' && import.meta.env) {
@@ -28,7 +51,13 @@ export function getNvidiaApiKey() {
       }
     } catch {}
   }
-  return key;
+
+  // 3. Check central AI_CONFIG
+  if (!key && AI_CONFIG.apiKey) {
+    key = AI_CONFIG.apiKey;
+  }
+
+  return key.trim();
 }
 
 export function setNvidiaApiKey(key) {
@@ -61,7 +90,7 @@ export function setNvidiaModel(modelId) {
 }
 
 export function isAiConfigured() {
-  return Boolean(getNvidiaApiKey());
+  return isAiEnabled() && Boolean(getNvidiaApiKey());
 }
 
 const SYSTEM_PROMPT = `Դուք «Զգույշ» (SafeArm) հայաստանյան կիբեռանվտանգության համակարգի գլխավոր AI վերլուծաբանն եք։
@@ -73,7 +102,8 @@ const SYSTEM_PROMPT = `Դուք «Զգույշ» (SafeArm) հայաստանյա�
 3. 5G միացնելու կամ կապի որակը բարելավելու համար AnyDesk / TeamViewer ներբեռնելու պահանջը 100% հեռավար մուտքի խարդախություն է։
 4. Գազպրոմի կամ պետական ներդրումների անվան տակ օրական 50,000 դրամ խոստացող հղումները խարդախություն են։
 5. «Քվեարկիր երեխայիս/զարմուհուս օգտին» (vote contest) հաղորդագրությունները WhatsApp/Telegram հաշիվներ գողանալու թակարդ են։
-6. Հաղորդագրությունը կարող է լինել մեսրոպատառ հայերեն, լատինատառ հայերեն (Armglish/translit, օր.՝ "Dzer hashivy kasecvel e"), ռուսերեն կամ անգլերեն։
+6. Կեղծ աշխատանքի առաջարկները (2 ժամ, 400,000 դրամ) կանխավճարի կորզում են:
+7. Հաղորդագրությունը կարող է լինել մեսրոպատառ հայերեն, լատինատառ հայերեն (Armglish/translit, օր.՝ "Dzer hashivy kasecvel e"), ռուսերեն կամ անգլերեն։
 
 ՊԱՏԱՍԽԱՆԻ ՁԵՎԱՉԱՓ.
 Դուք ՊԵՏՔ Է պատասխանեք ԲԱՑԱՌԱՊԵՍ վավեր JSON ֆորմատով՝ առանց որևէ ավելորդ նախաբանի կամ markdown \`\`\`json պիտակների.
@@ -99,7 +129,7 @@ const SYSTEM_PROMPT = `Դուք «Զգույշ» (SafeArm) հայաստանյա�
 export async function analyzeWithNemotron(text, selectedModel = null) {
   const apiKey = getNvidiaApiKey();
   if (!apiKey) {
-    throw new Error('NVIDIA API Key-ը տեղադրված չէ։ Խնդրում ենք նախ տեղադրել ձեր nvapi-... բանալին «AI Բանալի» բաժնում։');
+    throw new Error('AI բանալին կարգավորված չէ։');
   }
 
   const modelToUse = selectedModel || getNvidiaModel() || DEFAULT_MODEL;
@@ -161,10 +191,10 @@ export async function analyzeWithNemotron(text, selectedModel = null) {
       throw new Error('NVIDIA API Key-ը սխալ է կամ անվավեր (401 Unauthorized)։');
     }
     if (response.status === 410) {
-      throw new Error(`Նշված մոդելը (${modelToUse}) այլևս ակտիվ չէ (410 EOL)։ Ընտրեք «Nemotron-3 Ultra» կամ «Llama-3.3»։`);
+      throw new Error(`Նշված մոդելը (${modelToUse}) այլևս ակտիվ չէ (410 EOL)։`);
     }
     if (response.status === 403) {
-      throw new Error(`Մուտքն արգելված է (${modelToUse}): Ստուգեք, որ բանալին ունի թույլտվություն այս մոդելի համար։`);
+      throw new Error(`Մուտքն արգելված է (${modelToUse}): Ստուգեք բանալու թույլտվությունը։`);
     }
     if (response.status === 429) {
       throw new Error('Հարցումների քանակը գերազանցել է սահմանաչափը (429 Rate Limit)։');
@@ -176,7 +206,6 @@ export async function analyzeWithNemotron(text, selectedModel = null) {
   const data = await response.json();
   const rawContent = data?.choices?.[0]?.message?.content?.trim() || '';
 
-  // Մաքրել JSON-ը հնարավոր markdown նշաններից
   let cleanJson = rawContent;
   if (cleanJson.startsWith('```json')) {
     cleanJson = cleanJson.replace(/^```json\s*/i, '').replace(/```\s*$/, '');
