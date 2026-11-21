@@ -7,7 +7,7 @@
  * + 4. NVIDIA Nemotron AI Integration (Deep Contextual & Psychological Fraud Reasoning)
  */
 
-import { isDomainOfficiallyVerified } from './whitelist.js';
+import { isDomainOfficiallyVerified, getVerifiedBrandForHost } from './whitelist.js';
 import { analyzeDomainStructure } from './domainAnalyzer.js';
 import { analyzeSemanticIntent } from './semanticEngine.js';
 import { isAiConfigured, analyzeWithNemotron } from './aiClient.js';
@@ -32,13 +32,25 @@ export function extractUrls(text) {
 
   const combined = Array.from(new Set([...fullMatches, ...bareMatches]));
 
-  return combined.map(u => {
+  const rawUrls = combined.map(u => {
     let clean = u.replace(/[.,!?;:()՝։«»]+$/, '');
     if (!clean.startsWith('http://') && !clean.startsWith('https://')) {
       clean = 'http://' + clean;
     }
     return clean;
   });
+
+  // Կանխել նույն URL-ի կրկնությունը http/https տարբերակներով
+  const deduplicated = [];
+  for (const url of rawUrls) {
+    const stripped = url.replace(/^https?:\/\//i, '');
+    const exists = deduplicated.some(existing => existing.replace(/^https?:\/\//i, '') === stripped);
+    if (!exists) {
+      deduplicated.push(url);
+    }
+  }
+
+  return deduplicated;
 }
 
 export function parseHostname(urlStr) {
@@ -129,9 +141,27 @@ export function analyzeMessage(text) {
     adviceList.push('Խորհուրդ հարցրեք ձեր երեխաներից կամ հարազատներից՝ «Հարցնել հարազատին» կոճակով։');
   } else {
     status = 'green';
-    badgeText = 'ՎՏԱՆԳԱՎՈՐ ՆՇԱՆՆԵՐ ՉԵՆ ԳՏՆՎԵԼ';
-    explanation = 'Հաղորդագրության մեջ ֆիշինգի կամ խարդախության տարածված նշաններ չեն հայտնաբերվել։';
-    adviceList.push('Այնուամենայնիվ, միշտ պահպանեք զգոնությունը և երբեք մի՛ տրամադրեք ձեր բանկային քարտի PIN-ը կամ SMS կոդերը։');
+    if (urls.length > 0 && allUrlsVerified) {
+      const verifiedBrands = urls
+        .map(u => getVerifiedBrandForHost(parseHostname(u)))
+        .filter(Boolean);
+      const uniqueBrandNames = Array.from(new Set(verifiedBrands.map(b => b.name)));
+      const brandNamesStr = uniqueBrandNames.length > 0 
+        ? uniqueBrandNames.join(', ') 
+        : 'պաշտոնական պետական կամ բանկային համակարգի';
+
+      const uniqueHostnames = Array.from(new Set(urls.map(u => parseHostname(u)).filter(Boolean)));
+
+      badgeText = 'ՊԱՇՏՈՆԱԿԱՆ ԾԱՆՈՒՑՈՒՄ (ԱՆՎՏԱՆԳ Է)';
+      explanation = `Հաղորդագրությունը պարունակում է ${brandNamesStr} հավաստագրված պաշտոնական հղումը։ Ֆիշինգի կամ խարդախության նշաններ չեն հայտնաբերվել։`;
+      reasons.push(`Հղումը համապատասխանում է պաշտոնական հավաստագրված ցանկին (${uniqueHostnames.join(', ')})։`);
+      adviceList.push('Վճարումները կամ գործարքները կատարեք միայն պաշտոնական կայքում։');
+      adviceList.push('Միշտ ուշադիր եղեք, որ բրաուզերի հասցեի տողում գրված լինի ճիշտ պաշտոնական դոմենը։');
+    } else {
+      badgeText = 'ՎՏԱՆԳԱՎՈՐ ՆՇԱՆՆԵՐ ՉԵՆ ԳՏՆՎԵԼ';
+      explanation = 'Հաղորդագրության մեջ կասկածելի հղումներ, գաղտնի տվյալների կամ վճարման կեղծ պահանջներ չեն հայտնաբերվել։';
+      adviceList.push('Եթե հաղորդագրությունը ստացել եք ծանոթից, այն անվտանգ է։');
+    }
   }
 
   const uniqueReasons = Array.from(new Set(reasons));
@@ -164,20 +194,9 @@ export async function analyzeMessageAsync(text) {
     return null;
   }
 
-  // 1. Եթե միացված է NVIDIA NIM բանալին՝ ուղարկում ենք Nemotron AI-ին
+  // 1. Եթե միացված է NVIDIA NIM բանալին՝ միշտ ուղարկում ենք Nemotron AI-ին խորքային վերլուծության համար
   if (isAiConfigured()) {
     try {
-      // Արագ ստուգում. եթե միայն պաշտոնական հավաստագրված դոմեն է առանց որևէ կասկածի,
-      // անմիջապես վերադարձնում ենք կանաչ (խնայելով API հարցումները)
-      const urls = extractUrls(text);
-      if (urls.length > 0 && urls.every(u => isDomainOfficiallyVerified(parseHostname(u)))) {
-        const localQuick = analyzeMessage(text);
-        if (localQuick.status === 'green') {
-          return localQuick;
-        }
-      }
-
-      // Ուղարկել Nemotron AI-ին
       const aiResult = await analyzeWithNemotron(text);
       return aiResult;
     } catch (err) {
@@ -188,6 +207,6 @@ export async function analyzeMessageAsync(text) {
     }
   }
 
-  // 2. Եթե AI բանալի չկա՝ օգտագործում ենք տեղական շարժիչը
+  // 2. Եթե AI բանալի չկա (օֆլայն ռեժիմ)՝ օգտագործում ենք տեղական շարժիչը
   return analyzeMessage(text);
 }

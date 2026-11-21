@@ -42,3 +42,14 @@ export function isDomainOfficiallyVerified(hostname) {
     cleanHost === whitelisted || cleanHost.endsWith('.' + whitelisted)
   );
 }
+
+/**
+ * Վերադարձնում է պաշտոնական բրենդի տվյալները՝ ըստ դոմենի
+ */
+export function getVerifiedBrandForHost(hostname) {
+  if (!hostname) return null;
+  const cleanHost = hostname.toLowerCase();
+  return OFFICIAL_ARMENIAN_BRANDS.find(brand =>
+    brand.domains.some(whitelisted => cleanHost === whitelisted || cleanHost.endsWith('.' + whitelisted))
+  ) || null;
+}
