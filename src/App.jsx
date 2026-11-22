@@ -150,24 +150,26 @@ export default function App() {
             paddingRight: 'max(0.75rem, env(safe-area-inset-right))',
           }}
         >
-          {/* Logo */}
+          {/* Logo & Brand Identity */}
           <div className="flex items-center gap-2.5 sm:gap-3">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-b from-[#2f81f7] to-[#1f6feb] flex items-center justify-center text-white shrink-0 shadow-[0_2px_8px_rgba(31,111,235,0.4),inset_0_1px_0_rgba(255,255,255,0.3)]">
-              <Shield className="w-4 h-4 sm:w-5 sm:h-5" />
-            </div>
+            <img 
+              src="/favicon.svg" 
+              alt="Զգույշ Emblem" 
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl shadow-[0_2px_10px_rgba(47,129,247,0.35)] shrink-0 border border-[#2f81f7]/30"
+            />
             <div>
               <div className="flex items-center gap-1.5 sm:gap-2">
-                <span className="font-semibold text-sm sm:text-lg text-white tracking-tight">Զգույշ</span>
-                <span className="text-[11px] sm:text-xs text-[#8b949e] font-medium">SafeArm</span>
+                <img src="/logo-white.png" alt="Zguysh" className="h-4 sm:h-5 object-contain" />
+                <span className="font-semibold text-sm sm:text-base text-white tracking-tight">Զգույշ</span>
                 {hasAi && (
                   <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] px-2 py-0.5 rounded-full bg-[#238636]/15 text-[#3fb950] border border-[#238636]/30 font-medium">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#3fb950] animate-pulse" />
-                    <span>AI ակտիվ</span>
+                    <span>AI</span>
                   </span>
                 )}
               </div>
-              <p className="text-xs text-[#8b949e] hidden md:block">
-                Կիբեռանվտանգության և ֆիշինգի պաշտպանություն
+              <p className="text-[10px] sm:text-[11px] text-[#7d8590] font-semibold tracking-wider uppercase">
+                ՄԻՇՏ ՄԵԿ ՔԱՅԼ ԱՌԱՋ
               </p>
             </div>
           </div>
@@ -215,9 +217,9 @@ export default function App() {
         
         {/* Ներածություն */}
         <div className="mb-6 sm:mb-8 text-center sm:text-left">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1f6feb]/10 border border-[#1f6feb]/25 text-[#58a6ff] text-xs font-medium mb-3">
-            <Shield className="w-3.5 h-3.5" />
-            <span>Ազգային կիբեռպաշտպանության հարթակ</span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#1f6feb]/10 border border-[#1f6feb]/30 text-[#58a6ff] text-xs font-semibold tracking-wider uppercase mb-3 shadow-sm">
+            <Shield className="w-3.5 h-3.5 text-[#58a6ff]" />
+            <span>ՄԻՇՏ ՄԵԿ ՔԱՅԼ ԱՌԱՋ</span>
           </div>
           <h1 className={`${isElderlyMode ? 'text-2xl sm:text-3xl' : 'text-2xl sm:text-3xl'} font-bold text-white tracking-tight leading-tight`}>
             Ստուգեք կասկածելի հաղորդագրությունը
@@ -484,8 +486,16 @@ export default function App() {
           paddingRight: 'max(1rem, env(safe-area-inset-right))',
         }}
       >
-        <p className="font-medium text-[#c9d1d9]">«Զգույշ» (SafeArm) © 2026</p>
-        <p className="mt-1">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 max-w-3xl mx-auto">
+          <div className="flex items-center gap-2">
+            <img src="/logo-white.png" alt="Zguysh" className="h-4 object-contain opacity-80" />
+            <span className="font-semibold text-[#c9d1d9]">Զգույշ (SafeArm) © 2026</span>
+          </div>
+          <span className="text-[11px] font-semibold text-[#58a6ff] tracking-wider uppercase">
+            ՄԻՇՏ ՄԵԿ ՔԱՅԼ ԱՌԱՋ
+          </span>
+        </div>
+        <p className="mt-2 text-[#7d8590]">
           Հասարակագիտական և կրթական նախագիծ՝ ուղղված Հայաստանում տեղեկատվական անվտանգության բարձրացմանը։
         </p>
       </footer>
