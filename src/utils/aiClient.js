@@ -201,12 +201,12 @@ export async function analyzeWithNemotron(text, selectedModel = null) {
       throw new Error(`Կապի խնդիր NVIDIA NIM սերվերի հետ: ${nativeErr.message || 'Ստուգեք ինտերնետ կապը'}`);
     }
   } else {
-    // 2. Web Browser / Localhost Desktop Dev
-    const isDevBrowser = typeof window !== 'undefined' && 
-      window.location.protocol.startsWith('http') && 
-      (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-
-    const primaryUrl = isDevBrowser ? PROXY_URL : DIRECT_URL;
+    // 2. Web Browser (Localhost / Vercel / Production Web)
+    // Բրաուզերում միշտ առաջնային օգտագործում ենք PROXY_URL (/api/nvidia/...),
+    // որպեսզի CORS սահմանափակման պատճառով "Failed to fetch" չառաջանա:
+    // Localhost-ում դա սպասարկում է Vite proxy-ն, իսկ Vercel-ում՝ vercel.json rewrite-ը:
+    const isBrowser = typeof window !== 'undefined' && window.location.protocol.startsWith('http');
+    const primaryUrl = isBrowser ? PROXY_URL : DIRECT_URL;
 
     let response;
     try {
