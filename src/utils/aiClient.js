@@ -4,6 +4,7 @@
  */
 
 import { AI_CONFIG } from '../config/aiConfig.js';
+import { Capacitor, CapacitorHttp } from '@capacitor/core';
 
 export const SUPPORTED_MODELS = [
   { id: 'nvidia/nemotron-3-ultra-550b-a55b', name: 'NVIDIA Nemotron-3 Ultra (550B)' },
@@ -137,7 +138,8 @@ const SYSTEM_PROMPT = `Դուք «Զգույշ» (SafeArm) հայաստանյա�
  * Ուղարկում է հարցում NVIDIA Nemotron մոդելին
  */
 export async function analyzeWithNemotron(text, selectedModel = null) {
-  const apiKey = getNvidiaApiKey();
+  const rawKey = getNvidiaApiKey();
+  const apiKey = (rawKey || '').trim().replace(/[\r\n\t]/g, '');
   if (!apiKey) {
     throw new Error('AI բանալին կարգավորված չէ։');
   }
@@ -160,61 +162,112 @@ export async function analyzeWithNemotron(text, selectedModel = null) {
     'Authorization': `Bearer ${apiKey}`
   };
 
-  const isBrowserLocalhost = typeof window !== 'undefined' && 
-    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+  let rawContent = '';
 
-  const primaryUrl = isBrowserLocalhost ? PROXY_URL : DIRECT_URL;
-
-  let response;
-  try {
-    response = await fetch(primaryUrl, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(payload)
-    });
-  } catch (err) {
-    if (primaryUrl !== DIRECT_URL) {
-      try {
-        response = await fetch(DIRECT_URL, {
-          method: 'POST',
-          headers,
-          body: JSON.stringify(payload)
-        });
-      } catch (directErr) {
-        throw new Error('Կապի խնդիր NVIDIA NIM սերվերի հետ։ Համոզվեք, որ ինտերնետ կապը ակտիվ է։');
-      }
-    } else {
-      throw new Error(`Կապի խնդիր NVIDIA NIM սերվերի հետ: ${err.message}`);
-    }
-  }
-
-  if (!response.ok) {
-    let errorDetail = '';
+  // 1. Native Mobile (iOS / Android Capacitor)
+  // Օգտագործում ենք CapacitorHttp (native NSURLSession / OkHttp),
+  // որպեսզի շրջանցվեն WebKit-ի localhost / CORS սահմանափակումները
+  if (typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform && Capacitor.isNativePlatform()) {
     try {
-      const errJson = await response.json();
-      errorDetail = errJson?.detail || errJson?.message || JSON.stringify(errJson);
-    } catch {
-      errorDetail = await response.text();
+      const nativeRes = await CapacitorHttp.post({
+        url: DIRECT_URL,
+        headers,
+        data: payload
+      });
+
+      if (nativeRes.status === 401) {
+        throw new Error('NVIDIA API Key-ը սխալ է կամ անվավեր (401 Unauthorized)։');
+      }
+      if (nativeRes.status === 410) {
+        throw new Error(`Նշված մոդելը (${modelToUse}) այլևս ակտիվ չէ (410 EOL)։`);
+      }
+      if (nativeRes.status === 403) {
+        throw new Error(`Մուտքն արգելված է (${modelToUse}): Ստուգեք բանալու թույլտվությունը։`);
+      }
+      if (nativeRes.status === 429) {
+        throw new Error('Հարցումների քանակը գերազանցել է սահմանաչափը (429 Rate Limit)։');
+      }
+      if (nativeRes.status < 200 || nativeRes.status >= 300) {
+        const errDetail = typeof nativeRes.data === 'string' ? nativeRes.data : JSON.stringify(nativeRes.data || {});
+        throw new Error(`NVIDIA API Error (${nativeRes.status}): ${errDetail.slice(0, 150)}`);
+      }
+
+      const resData = typeof nativeRes.data === 'string' ? JSON.parse(nativeRes.data) : nativeRes.data;
+      rawContent = resData?.choices?.[0]?.message?.content?.trim() || '';
+    } catch (nativeErr) {
+      if (nativeErr.message && nativeErr.message.includes('NVIDIA')) {
+        throw nativeErr;
+      }
+      throw new Error(`Կապի խնդիր NVIDIA NIM սերվերի հետ: ${nativeErr.message || 'Ստուգեք ինտերնետ կապը'}`);
+    }
+  } else {
+    // 2. Web Browser / Localhost Desktop Dev
+    const isDevBrowser = typeof window !== 'undefined' && 
+      window.location.protocol.startsWith('http') && 
+      (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+    const primaryUrl = isDevBrowser ? PROXY_URL : DIRECT_URL;
+
+    let response;
+    try {
+      response = await fetch(primaryUrl, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload)
+      });
+    } catch (err) {
+      if (primaryUrl !== DIRECT_URL) {
+        try {
+          response = await fetch(DIRECT_URL, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(payload)
+          });
+        } catch (directErr) {
+          throw new Error('Կապի խնդիր NVIDIA NIM սերվերի հետ։ Համոզվեք, որ ինտերնետ կապը ակտիվ է։');
+        }
+      } else {
+        throw new Error(`Կապի խնդիր NVIDIA NIM սերվերի հետ: ${err.message}`);
+      }
     }
 
-    if (response.status === 401) {
-      throw new Error('NVIDIA API Key-ը սխալ է կամ անվավեր (401 Unauthorized)։');
-    }
-    if (response.status === 410) {
-      throw new Error(`Նշված մոդելը (${modelToUse}) այլևս ակտիվ չէ (410 EOL)։`);
-    }
-    if (response.status === 403) {
-      throw new Error(`Մուտքն արգելված է (${modelToUse}): Ստուգեք բանալու թույլտվությունը։`);
-    }
-    if (response.status === 429) {
-      throw new Error('Հարցումների քանակը գերազանցել է սահմանաչափը (429 Rate Limit)։');
+    // Կարդալ raw text-ով, որպեսզի WebKit-ում response.json()-ը չառաջացնի "The string did not match the expected pattern"
+    const rawText = await response.text();
+
+    if (!response.ok) {
+      let errorDetail = '';
+      try {
+        const errJson = JSON.parse(rawText);
+        errorDetail = errJson?.detail || errJson?.message || JSON.stringify(errJson);
+      } catch {
+        errorDetail = rawText;
+      }
+
+      if (response.status === 401) {
+        throw new Error('NVIDIA API Key-ը սխալ է կամ անվավեր (401 Unauthorized)։');
+      }
+      if (response.status === 410) {
+        throw new Error(`Նշված մոդելը (${modelToUse}) այլևս ակտիվ չէ (410 EOL)։`);
+      }
+      if (response.status === 403) {
+        throw new Error(`Մուտքն արգելված է (${modelToUse}): Ստուգեք բանալու թույլտվությունը։`);
+      }
+      if (response.status === 429) {
+        throw new Error('Հարցումների քանակը գերազանցել է սահմանաչափը (429 Rate Limit)։');
+      }
+
+      throw new Error(`NVIDIA API Error (${response.status}): ${errorDetail.slice(0, 150) || 'Անհայտ սխալ'}`);
     }
 
-    throw new Error(`NVIDIA API Error (${response.status}): ${errorDetail || 'Անհայտ սխալ'}`);
+    let data;
+    try {
+      data = JSON.parse(rawText);
+    } catch (parseErr) {
+      throw new Error('NVIDIA սերվերից ստացվել է անվավեր պատասխան (ոչ JSON)։');
+    }
+
+    rawContent = data?.choices?.[0]?.message?.content?.trim() || '';
   }
-
-  const data = await response.json();
-  const rawContent = data?.choices?.[0]?.message?.content?.trim() || '';
 
   let cleanJson = rawContent;
   if (cleanJson.startsWith('```json')) {
